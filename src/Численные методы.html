@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<!-- saved from url=(0031)http://127.0.0.1:5500/main.html -->
+<html lang="ru"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Численные методы</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .task {
+        margin-bottom: 20px;
+      }
+      .method {
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Решение нелинейных уравнений разными методами</h1>
+
+    <div class="task">
+      <h3>1. Уравнение: ( x^3 + 2x + 2 = 0 )</h3>
+      <p>Результат: <span id="result1">-0.76563</span></p>
+      <p>Метод: Деление отрезка пополам</p>
+    </div>
+
+    <div class="task">
+      <h3>2. Уравнение: ( x^3 - 2x + 2 = 0 )</h3>
+      <p>Результат: <span id="result2">-1.76563</span></p>
+      <p>Метод: Деление отрезка пополам</p>
+    </div>
+
+    <div class="task">
+      <h3>3. Уравнение: ( x^3 + 3x - 1 = 0 )</h3>
+      <p>Результат: <span id="result3">0.32132</span></p>
+      <p>Метод: Метод Ньютона</p>
+    </div>
+
+    <div class="task">
+      <h3>4. Уравнение: ( x^3 + x - 3 = 0 )</h3>
+      <p>Результат: <span id="result4">1.21350</span></p>
+      <p>Метод: Метод Ньютона</p>
+    </div>
+
+    <div class="task">
+      <h3>5. Уравнение: ( x^3 + 2x + 4 = 0 )</h3>
+      <p>Результат: <span id="result5">Infinity</span></p>
+      <p>Метод: Простая итерация</p>
+    </div>
+
+    <div class="task">
+      <h3>6. Уравнение: ( x^3 + 9x - 3 = 0 )</h3>
+      <p>Результат: <span id="result6">0.32957</span></p>
+      <p>Метод: Простая итерация</p>
+    </div>
+
+    <script>
+      // Примеры уравнений
+      const equations = [
+        (x) => Math.pow(x, 3) + 2 * x + 2,
+        (x) => Math.pow(x, 3) - 2 * x + 2,
+        (x) => Math.pow(x, 3) + 3 * x - 1,
+        (x) => Math.pow(x, 3) + x - 3,
+        (x) => Math.pow(x, 3) + 2 * x + 4,
+        (x) => Math.pow(x, 3) + 9 * x - 3,
+      ];
+
+      // Метод деления отрезка пополам
+      function bisectionMethod(f, a, b, tol = 0.01, maxIter = 100) {
+        let mid;
+        let iter = 0;
+        while ((b - a) / 2 > tol && iter < maxIter) {
+          mid = (a + b) / 2;
+          if (f(mid) === 0) return mid;
+          else if (f(mid) * f(a) < 0) b = mid;
+          else a = mid;
+          iter++;
+        }
+        return mid;
+      }
+
+      // Метод Ньютона
+      function newtonMethod(f, df, x0, tol = 0.01, maxIter = 100) {
+        let x = x0;
+        let iter = 0;
+        while (Math.abs(f(x)) > tol && iter < maxIter) {
+          x = x - f(x) / df(x);
+          iter++;
+        }
+        return x;
+      }
+
+      // Метод простой итерации
+      function iterationMethod(f, phi, x0, tol = 0.01, maxIter = 100) {
+        let x = x0;
+        let iter = 0;
+        while (Math.abs(f(x)) > tol && iter < maxIter) {
+          x = phi(x);
+          iter++;
+        }
+        return x;
+      }
+
+      // Производные для метода Ньютона
+      const derivatives = [
+        null, // Для первого и второго уравнения метод Ньютона не используется
+        null,
+        (x) => 3 * Math.pow(x, 2) + 3,
+        (x) => 3 * Math.pow(x, 2) + 1,
+      ];
+
+      // Итерационные функции для метода простой итерации
+      const iterations = [
+        null, // Для первых четырех уравнений метод итерации не используется
+        null,
+        null,
+        null,
+        (x) => -Math.pow(x, 3) / 2 - 2, // Исправленная функция для уравнения 5
+        (x) => (3 - Math.pow(x, 3)) / 9, // Исправленная функция для уравнения 6
+      ];
+
+      // Решения для уравнений 1 и 2 (метод деления отрезка пополам)
+      document.getElementById('result1').textContent = bisectionMethod(equations[0], -2, 0).toFixed(
+        5,
+      );
+      document.getElementById('result2').textContent = bisectionMethod(equations[1], -2, 0).toFixed(
+        5,
+      );
+
+      // Решения для уравнений 3 и 4 (метод Ньютона)
+      document.getElementById('result3').textContent = newtonMethod(
+        equations[2],
+        derivatives[2],
+        -1,
+      ).toFixed(5);
+      document.getElementById('result4').textContent = newtonMethod(
+        equations[3],
+        derivatives[3],
+        -1,
+      ).toFixed(5);
+
+      // Решения для уравнений 5 и 6 (метод простой итерации)
+      document.getElementById('result5').textContent = iterationMethod(
+        equations[4],
+        iterations[4],
+        -1,
+      ).toFixed(5);
+      document.getElementById('result6').textContent = iterationMethod(
+        equations[5],
+        iterations[5],
+        -1,
+      ).toFixed(5);
+    </script>
+  <!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+
+</body></html>
